@@ -1,9 +1,10 @@
-========================
-DO NOT USE MASTER BRANCH
-========================
-
-Signaturit Python SDK
+Async Signaturit Python SDK
 =====================
+
+## EDITED PROJECT ON 23/01/2019 by WeGroup
+
+USE THIS WITH CAUTION TESTS/README might be wrong
+
 This package is a wrapper for Signaturit Api. If you didn't read the documentation yet, maybe it's time to take a look [here](https://docs.signaturit.com/v3).
 
 You can install the package through pip.

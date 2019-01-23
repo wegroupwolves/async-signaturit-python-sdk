@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import requests
+import asyncio
 import json
 
 
@@ -37,44 +38,67 @@ class Connection:
 
         self.__base_url += url
 
-    def get_request(self):
-        response = requests.get(self.__base_url, headers=self.__headers)
+    async def get_request(self):
+        loop = asyncio.get_event_loop()
 
+        def blocking_request(self):
+            return requests.get(self.__base_url, headers=self.__headers)
+
+        response = await loop.run_in_executor(None, blocking_request, self)
         return json.loads(response.text)
 
-    def post_request(self):
-        response = requests.post(
-            self.__base_url,
-            headers=self.__headers,
-            files=self.__files,
-            data=self.__params,
-        )
+    async def post_request(self):
+        loop = asyncio.get_event_loop()
 
+        def blocking_request(self):
+            return requests.post(
+                self.__base_url,
+                headers=self.__headers,
+                files=self.__files,
+                data=self.__params,
+            )
+
+        response = await loop.run_in_executor(None, blocking_request, self)
         return json.loads(response.text)
 
-    def put_request(self):
+    async def put_request(self):
         raw = self.__files["files"].read()
+        loop = asyncio.get_event_loop()
 
-        response = requests.put(self.__base_url, headers=self.__headers, data=raw)
+        def blocking_request(self):
+            return requests.put(self.__base_url, headers=self.__headers, data=raw)
 
+        response = await loop.run_in_executor(None, blocking_request, self)
         return json.loads(response.text)
 
-    def delete_request(self):
-        response = requests.delete(self.__base_url, headers=self.__headers)
+    async def delete_request(self):
+        loop = asyncio.get_event_loop()
 
+        def blocking_request(self):
+            return requests.delete(self.__base_url, headers=self.__headers)
+
+        response = await loop.run_in_executor(None, blocking_request, self)
         return json.loads(response.text)
 
-    def patch_request(self):
-        response = requests.patch(
-            self.__base_url, headers=self.__headers, data=json.dumps(self.__params)
-        )
+    async def patch_request(self):
+        loop = asyncio.get_event_loop()
 
+        def blocking_request(self):
+            return requests.patch(
+                self.__base_url, headers=self.__headers, data=json.dumps(self.__params)
+            )
+
+        response = await loop.run_in_executor(None, blocking_request, self)
         return json.loads(response.text)
 
-    def file_request(self):
+    async def file_request(self):
         """
         Request that retrieve a binary file
         """
-        response = requests.get(self.__base_url, headers=self.__headers, stream=True)
+        loop = asyncio.get_event_loop()
 
+        def blocking_request(self):
+            return requests.get(self.__base_url, headers=self.__headers, stream=True)
+
+        response = await loop.run_in_executor(None, blocking_request, self)
         return response.raw.read(), response.headers

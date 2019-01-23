@@ -56,7 +56,7 @@ class SignaturitClient:
         self.token = token
         self.production = production
 
-    def get_signatures(self, limit=100, offset=0, conditions={}):
+    async def get_signatures(self, limit=100, offset=0, conditions={}):
         """
         Get all signatures
         """
@@ -71,9 +71,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_signature(self, signature_id):
+    async def get_signature(self, signature_id):
         """
         Get a concrete Signature
         @return Signature data
@@ -81,9 +82,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, self.SIGNS_ID_URL % signature_id)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def count_signatures(self, conditions={}):
+    async def count_signatures(self, conditions={}):
         """
         Count all signatures
         """
@@ -98,9 +100,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def download_audit_trail(self, signature_id, document_id):
+    async def download_audit_trail(self, signature_id, document_id):
         """
         Get the audit trail of concrete document
         @signature_id: Id of signature
@@ -112,14 +115,14 @@ class SignaturitClient:
             self.SIGNS_DOCUMENTS_AUDIT_URL % (signature_id, document_id),
         )
 
-        response, headers = connection.file_request()
+        response, headers = await connection.file_request()
 
         if headers["content-type"] == "application/json":
             return response
 
         return response
 
-    def download_signed_document(self, signature_id, document_id):
+    async def download_signed_document(self, signature_id, document_id):
         """
         Get the audit trail of concrete document
         @signature_id: Id of signature
@@ -132,14 +135,14 @@ class SignaturitClient:
             self.SIGNS_DOCUMENTS_SIGNED_URL % (signature_id, document_id),
         )
 
-        response, headers = connection.file_request()
+        response, headers = await connection.file_request()
 
         if headers["content-type"] == "application/json":
             return response
 
         return response
 
-    def create_signature(self, files, recipients, params):
+    async def create_signature(self, files, recipients, params):
         """
         Create a new Signature request.
         @files
@@ -178,9 +181,41 @@ class SignaturitClient:
         connection.add_params(parameters)
         connection.add_files(documents)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def cancel_signature(self, signature_id):
+    async def create_signature_bytefiles(self, files, recipients, params):
+        """
+        Create a new Signature request.
+        @files
+            Files to send without urls format
+               - [{"files[0]": ("filename.pdf", "bytesobjectwithpdfdata")}]
+        @recipients
+            A dictionary with the email and fullname of the person you want to sign.
+            If you wanna send only to one person:
+               - [{"email": "john_doe@gmail.com", "fullname": "John"}]
+            For multiple recipients, yo need to submit a list of dicts:
+               - [{"email": "john_doe@gmail.com", "fullname": "John"}, {"email":"bob@gmail.com", "fullname": "Bob"}]
+        @params: An array of params
+        """
+        parameters = {}
+        parser = Parser()
+        recipients = recipients if isinstance(recipients, list) else [recipients]
+        index = 0
+        for recipient in recipients:
+            parser.fill_array(parameters, recipient, "recipients[%i]" % index)
+            index += 1
+        parser.fill_array(parameters, params, "")
+
+        connection = Connection(self.token)
+        connection.set_url(self.production, self.SIGNS_URL)
+        connection.add_params(parameters)
+        connection.add_files(files)
+
+        result = await connection.post_request()
+        return result
+
+    async def cancel_signature(self, signature_id):
         """
         Cancel a concrete Signature
         @signature_id: Id of signature
@@ -190,9 +225,10 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.SIGNS_CANCEL_URL % signature_id)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def send_signature_reminder(self, signature_id):
+    async def send_signature_reminder(self, signature_id):
         """
         Send a reminder email
         @signature_id: Id of signature
@@ -202,9 +238,10 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.SIGNS_SEND_REMINDER_URL % signature_id)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def get_branding(self, branding_id):
+    async def get_branding(self, branding_id):
         """
         Get a concrete branding
         @branding_id: Id of the branding to fetch
@@ -214,9 +251,10 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.BRANDINGS_ID_URL % branding_id)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_brandings(self):
+    async def get_brandings(self):
         """
         Get all account brandings
         @return List of brandings
@@ -225,14 +263,15 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.BRANDINGS_URL)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def create_branding(self, params):
+    async def create_branding(self, params):
         """
         Create a new branding
         @params: An array of params (all params are optional)
-            - layout: Default color for all application widgets (hex code)
-            - text: Default text color for all application widgets (hex code)
+            - layout: async default color for all application widgets (hex code)
+            - text: async default text color for all application widgets (hex code)
             - application_texts: A dict with the new text values
             - sign_button: Text for sign button
             - send_button: Text for send button
@@ -249,9 +288,10 @@ class SignaturitClient:
         connection.set_url(self.production, self.BRANDINGS_URL)
         connection.add_params(params, json_format=True)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def update_branding(self, branding_id, params):
+    async def update_branding(self, branding_id, params):
         """
         Update a existing branding
         @branding_id: Id of the branding to update
@@ -264,9 +304,10 @@ class SignaturitClient:
         connection.set_url(self.production, self.BRANDINGS_ID_URL % branding_id)
         connection.add_params(params)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def get_templates(self, limit=100, offset=0):
+    async def get_templates(self, limit=100, offset=0):
         """
         Get all account templates
         """
@@ -276,9 +317,10 @@ class SignaturitClient:
 
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_emails(self, limit=100, offset=0, conditions={}):
+    async def get_emails(self, limit=100, offset=0, conditions={}):
         """
         Get all certified emails
         """
@@ -293,9 +335,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def count_emails(self, conditions={}):
+    async def count_emails(self, conditions={}):
         """
         Count all certified emails
         """
@@ -311,9 +354,10 @@ class SignaturitClient:
         connection.set_url(self.production, url)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_email(self, email_id):
+    async def get_email(self, email_id):
         """
         Get a specific email
         """
@@ -321,23 +365,24 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.EMAILS_ID_URL % email_id)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def download_email_audit_trail(self, email_id, certificate_id):
+    async def download_email_audit_trail(self, email_id, certificate_id):
         connection = Connection(self.token)
 
         connection.set_url(
             self.production, self.EMAILS_AUDIT_TRAIL % (email_id, certificate_id)
         )
 
-        response, headers = connection.file_request()
+        response, headers = await connection.file_request()
 
         if headers["content-type"] == "application/json":
             return response
 
         return response
 
-    def create_email(self, files, recipients, subject, body, params={}):
+    async def create_email(self, files, recipients, subject, body, params={}):
         """
         Create a new certified email
 
@@ -382,9 +427,10 @@ class SignaturitClient:
         connection.add_params(parameters)
         connection.add_files(documents)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def count_SMS(self, conditions={}):
+    async def count_SMS(self, conditions={}):
         """
         Count all certified sms
         """
@@ -400,9 +446,10 @@ class SignaturitClient:
         connection.set_url(self.production, url)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_SMS(self, limit=100, offset=0, conditions={}):
+    async def get_SMS(self, limit=100, offset=0, conditions={}):
         """
         Get all certified sms
         """
@@ -417,9 +464,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_single_SMS(self, sms_id):
+    async def get_single_SMS(self, sms_id):
         """
         Get a specific sms
         """
@@ -427,23 +475,24 @@ class SignaturitClient:
 
         connection.set_url(self.production, self.SMS_ID_URL % sms_id)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def download_SMS_audit_trail(self, sms_id, certificate_id):
+    async def download_SMS_audit_trail(self, sms_id, certificate_id):
         connection = Connection(self.token)
 
         connection.set_url(
             self.production, self.SMS_AUDIT_TRAIL % (sms_id, certificate_id)
         )
 
-        response, headers = connection.file_request()
+        response, headers = await connection.file_request()
 
         if headers["content-type"] == "application/json":
             return response
 
         return response
 
-    def create_SMS(self, files, recipients, body, params={}):
+    async def create_SMS(self, files, recipients, body, params={}):
         """
         Create a new certified sms
 
@@ -485,9 +534,10 @@ class SignaturitClient:
         connection.add_params(parameters)
         connection.add_files(documents)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def get_users(self, limit=100, offset=0):
+    async def get_users(self, limit=100, offset=0):
         """
         Get all users from your current team
         """
@@ -496,9 +546,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_seats(self, limit=100, offset=0):
+    async def get_seats(self, limit=100, offset=0):
         """
         Get all seats from your current team
         """
@@ -507,9 +558,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_user(self, user_id):
+    async def get_user(self, user_id):
         """
            Get a single user
         """
@@ -518,9 +570,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def invite_user(self, email, role):
+    async def invite_user(self, email, role):
         """
         Send an invitation to email with a link to join your team
         :param email: Email to add to your team
@@ -532,9 +585,10 @@ class SignaturitClient:
         connection.set_url(self.production, self.TEAM_USERS_URL)
         connection.add_params(parameters)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def change_user_role(self, user_id, role):
+    async def change_user_role(self, user_id, role):
         """
         Change role of current user
         :param user_id: Id of user
@@ -548,9 +602,10 @@ class SignaturitClient:
         connection.set_url(self.production, url)
         connection.add_params(parameters)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def remove_user(self, user_id):
+    async def remove_user(self, user_id):
         """
         Remove a user from your team
         :param user_id: Id of user
@@ -561,9 +616,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def remove_seat(self, seat_id):
+    async def remove_seat(self, seat_id):
         """
         Remove a seat from your team
         :param seat_id: Id of user
@@ -574,9 +630,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def get_groups(self, limit=100, offset=0):
+    async def get_groups(self, limit=100, offset=0):
         """
         Get all groups from your current team
         """
@@ -585,9 +642,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_group(self, group_id):
+    async def get_group(self, group_id):
         """
         Get a single group
         """
@@ -596,9 +654,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def create_group(self, name):
+    async def create_group(self, name):
         """
         Create group
         :param name: Group name
@@ -611,9 +670,10 @@ class SignaturitClient:
         connection.set_url(self.production, url)
         connection.add_params(parameters)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def update_group(self, group_id, name):
+    async def update_group(self, group_id, name):
         """
         Change group name
         :param group_id: Id of group
@@ -628,9 +688,10 @@ class SignaturitClient:
         connection.add_header("Content-Type", "application/json")
         connection.add_params(parameters)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def delete_group(self, group_id):
+    async def delete_group(self, group_id):
         """
         Remove a group from your team
         :param group_id: Id of group
@@ -641,9 +702,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def add_member_to_group(self, group_id, user_id):
+    async def add_member_to_group(self, group_id, user_id):
         """
         Add a user to a group as a member
         :param group_id:
@@ -654,9 +716,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def remove_member_from_group(self, group_id, user_id):
+    async def remove_member_from_group(self, group_id, user_id):
         """
         Add a user to a group as a member
         :param group_id:
@@ -667,9 +730,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def add_manager_to_group(self, group_id, user_id):
+    async def add_manager_to_group(self, group_id, user_id):
         """
         Add a user to a group as a member
         :param group_id:
@@ -680,9 +744,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def remove_manager_from_group(self, group_id, user_id):
+    async def remove_manager_from_group(self, group_id, user_id):
         """
         Add a user to a group as a member
         :param group_id:
@@ -693,9 +758,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def get_subscriptions(self, limit=100, offset=0, params={}):
+    async def get_subscriptions(self, limit=100, offset=0, params={}):
         """
         Get all subscriptions
         """
@@ -710,9 +776,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def count_subscriptions(self, params={}):
+    async def count_subscriptions(self, params={}):
         """
         Count all subscriptions
         """
@@ -727,9 +794,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_subscription(self, subscription_id):
+    async def get_subscription(self, subscription_id):
         """
         Get single subscription
         """
@@ -738,9 +806,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def create_subscription(self, url, events):
+    async def create_subscription(self, url, events):
         """
         Create subscription
         :param events: Events to subscribe
@@ -755,9 +824,10 @@ class SignaturitClient:
         connection.add_header("Content-Type", "application/json")
         connection.add_params(params, json_format=True)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def update_subscription(self, subscription_id, url=None, events=None):
+    async def update_subscription(self, subscription_id, url=None, events=None):
         """
         Create subscription
         :param subscription_id: Subscription to update
@@ -779,9 +849,10 @@ class SignaturitClient:
         connection.add_header("Content-Type", "application/json")
         connection.add_params(params)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def delete_subscription(self, subscription_id):
+    async def delete_subscription(self, subscription_id):
         """
         Delete single subscription
         """
@@ -790,9 +861,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result
 
-    def get_contacts(self, limit=100, offset=0, params={}):
+    async def get_contacts(self, limit=100, offset=0, params={}):
         """
         Get all account contacts
         """
@@ -807,9 +879,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def get_contact(self, contact_id):
+    async def get_contact(self, contact_id):
         """
         Get single contact
         """
@@ -818,9 +891,10 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.get_request()
+        result = await connection.get_request()
+        return result
 
-    def create_contact(self, email, name):
+    async def create_contact(self, email, name):
         """
         Create a new contact
         :param email: user email
@@ -835,9 +909,10 @@ class SignaturitClient:
         connection.add_header("Content-Type", "application/json")
         connection.add_params(params, json_format=True)
 
-        return connection.post_request()
+        result = await connection.post_request()
+        return result
 
-    def update_contact(self, contact_id, email=None, name=None):
+    async def update_contact(self, contact_id, email=None, name=None):
         """
         Update a current contact
         :param contact_id: contact id
@@ -859,9 +934,10 @@ class SignaturitClient:
         connection.add_header("Content-Type", "application/json")
         connection.add_params(params)
 
-        return connection.patch_request()
+        result = await connection.patch_request()
+        return result
 
-    def delete_contact(self, contact_id):
+    async def delete_contact(self, contact_id):
         """
         Delete single contact
         """
@@ -870,4 +946,5 @@ class SignaturitClient:
         connection = Connection(self.token)
         connection.set_url(self.production, url)
 
-        return connection.delete_request()
+        result = await connection.delete_request()
+        return result

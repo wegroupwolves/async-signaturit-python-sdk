@@ -1,54 +1,56 @@
+from __future__ import absolute_import
 from signaturit_sdk.resources.connection import Connection
 from signaturit_sdk.resources.parser import Parser
 
+
 class SignaturitClient:
-    BRANDINGS_URL = '/v3/brandings.json'
-    BRANDINGS_ID_URL = '/v3/brandings/%s.json'
+    BRANDINGS_URL = "/v3/brandings.json"
+    BRANDINGS_ID_URL = "/v3/brandings/%s.json"
 
-    CONTACTS_URL = '/v3/contacts.json'
-    CONTACTS_ID_URL = '/v3/contacts/%s.json'
+    CONTACTS_URL = "/v3/contacts.json"
+    CONTACTS_ID_URL = "/v3/contacts/%s.json"
 
-    EMAILS_URL = '/v3/emails.json'
-    EMAILS_COUNT_URL = '/v3/emails/count.json'
-    EMAILS_ID_URL = '/v3/emails/%s.json'
-    EMAILS_AUDIT_TRAIL = '/v3/emails/%s/certificates/%s/download/audit_trail'
+    EMAILS_URL = "/v3/emails.json"
+    EMAILS_COUNT_URL = "/v3/emails/count.json"
+    EMAILS_ID_URL = "/v3/emails/%s.json"
+    EMAILS_AUDIT_TRAIL = "/v3/emails/%s/certificates/%s/download/audit_trail"
 
-    PACKAGES_URL = '/v3/packages.json'
-    PACKAGES_ID_URL = '/v3/packages/%s.json'
-    PACKAGES_SIGNATURE_URL = '/v3/packages/signatures.json'
-    PACKAGES_EMAIL_URL = '/v3/packages/emails.json'
-    PACKAGES_SMS_URL = '/v3/packages/sms.json'
-    PACKAGES_AUDIT_TRAIL_URL = '/v3/packages/%s/download/audit_trail'
+    PACKAGES_URL = "/v3/packages.json"
+    PACKAGES_ID_URL = "/v3/packages/%s.json"
+    PACKAGES_SIGNATURE_URL = "/v3/packages/signatures.json"
+    PACKAGES_EMAIL_URL = "/v3/packages/emails.json"
+    PACKAGES_SMS_URL = "/v3/packages/sms.json"
+    PACKAGES_AUDIT_TRAIL_URL = "/v3/packages/%s/download/audit_trail"
 
     PRODUCTION = True
 
-    SMS_URL = '/v3/sms.json'
-    SMS_COUNT_URL = '/v3/sms/count.json'
-    SMS_ID_URL = '/v3/sms/%s.json'
-    SMS_AUDIT_TRAIL = '/v3/sms/%s/certificates/%s/download/audit_trail'
+    SMS_URL = "/v3/sms.json"
+    SMS_COUNT_URL = "/v3/sms/count.json"
+    SMS_ID_URL = "/v3/sms/%s.json"
+    SMS_AUDIT_TRAIL = "/v3/sms/%s/certificates/%s/download/audit_trail"
 
-    SUBSCRIPTIONS_URL = '/v3/subscriptions.json'
-    SUBSCRIPTIONS_COUNT_URL = '/v3/subscriptions/count.json'
-    SUBSCRIPTIONS_ID_URL = '/v3/subscriptions/%s.json'
+    SUBSCRIPTIONS_URL = "/v3/subscriptions.json"
+    SUBSCRIPTIONS_COUNT_URL = "/v3/subscriptions/count.json"
+    SUBSCRIPTIONS_ID_URL = "/v3/subscriptions/%s.json"
 
-    SIGNS_URL = '/v3/signatures.json'
-    SIGNS_CANCEL_URL = '/v3/signatures/%s/cancel.json'
-    SIGNS_COUNT_URL = '/v3/signatures/count.json'
-    SIGNS_ID_URL = '/v3/signatures/%s.json'
-    SIGNS_DOCUMENTS_AUDIT_URL = '/v3/signatures/%s/documents/%s/download/audit_trail'
-    SIGNS_DOCUMENTS_SIGNED_URL = '/v3/signatures/%s/documents/%s/download/signed'
-    SIGNS_SEND_REMINDER_URL = '/v3/signatures/%s/reminder.json'
+    SIGNS_URL = "/v3/signatures.json"
+    SIGNS_CANCEL_URL = "/v3/signatures/%s/cancel.json"
+    SIGNS_COUNT_URL = "/v3/signatures/count.json"
+    SIGNS_ID_URL = "/v3/signatures/%s.json"
+    SIGNS_DOCUMENTS_AUDIT_URL = "/v3/signatures/%s/documents/%s/download/audit_trail"
+    SIGNS_DOCUMENTS_SIGNED_URL = "/v3/signatures/%s/documents/%s/download/signed"
+    SIGNS_SEND_REMINDER_URL = "/v3/signatures/%s/reminder.json"
 
-    TEMPLATES_URL = '/v3/templates.json'
+    TEMPLATES_URL = "/v3/templates.json"
 
-    TEAM_USERS_URL = '/v3/team/users.json'
-    TEAM_SEATS_URL = '/v3/team/seats.json'
-    TEAM_SEATS_ID_URL = '/v3/team/seats/%s.json'
-    TEAM_USERS_ID_URL = '/v3/team/users/%s.json'
-    TEAM_MANAGERS_URL = '/v3/team/groups/%s/managers/%s.json'
-    TEAM_MEMBERS_URL = '/v3/team/groups/%s/members/%s.json'
-    TEAM_GROUPS_URL = '/v3/team/groups.json'
-    TEAM_GROUPS_ID_URL = '/v3/team/groups/%s.json'
+    TEAM_USERS_URL = "/v3/team/users.json"
+    TEAM_SEATS_URL = "/v3/team/seats.json"
+    TEAM_SEATS_ID_URL = "/v3/team/seats/%s.json"
+    TEAM_USERS_ID_URL = "/v3/team/users/%s.json"
+    TEAM_MANAGERS_URL = "/v3/team/groups/%s/managers/%s.json"
+    TEAM_MEMBERS_URL = "/v3/team/groups/%s/members/%s.json"
+    TEAM_GROUPS_URL = "/v3/team/groups.json"
+    TEAM_GROUPS_ID_URL = "/v3/team/groups/%s.json"
 
     def __init__(self, token, production=False):
         self.token = token
@@ -61,10 +63,10 @@ class SignaturitClient:
         url = self.SIGNS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -85,13 +87,13 @@ class SignaturitClient:
         """
         Count all signatures
         """
-        url = self.SIGNS_COUNT_URL + '?'
+        url = self.SIGNS_COUNT_URL + "?"
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -105,11 +107,14 @@ class SignaturitClient:
         @document_id: Id of document
         """
         connection = Connection(self.token)
-        connection.set_url(self.production, self.SIGNS_DOCUMENTS_AUDIT_URL % (signature_id, document_id))
+        connection.set_url(
+            self.production,
+            self.SIGNS_DOCUMENTS_AUDIT_URL % (signature_id, document_id),
+        )
 
         response, headers = connection.file_request()
 
-        if headers['content-type'] == 'application/json':
+        if headers["content-type"] == "application/json":
             return response
 
         return response
@@ -122,11 +127,14 @@ class SignaturitClient:
         """
         connection = Connection(self.token)
 
-        connection.set_url(self.production, self.SIGNS_DOCUMENTS_SIGNED_URL % (signature_id, document_id))
+        connection.set_url(
+            self.production,
+            self.SIGNS_DOCUMENTS_SIGNED_URL % (signature_id, document_id),
+        )
 
         response, headers = connection.file_request()
 
-        if headers['content-type'] == 'application/json':
+        if headers["content-type"] == "application/json":
             return response
 
         return response
@@ -153,17 +161,17 @@ class SignaturitClient:
 
         index = 0
         for recipient in recipients:
-            parser.fill_array(parameters, recipient, 'recipients[%i]' % index)
+            parser.fill_array(parameters, recipient, "recipients[%i]" % index)
 
             index += 1
 
-        parser.fill_array(parameters, params, '')
+        parser.fill_array(parameters, params, "")
 
         documents = {}
 
         files = files if isinstance(files, list) else [files]
 
-        parser.fill_array(documents, files, 'files')
+        parser.fill_array(documents, files, "files")
 
         connection = Connection(self.token)
         connection.set_url(self.production, self.SIGNS_URL)
@@ -237,7 +245,7 @@ class SignaturitClient:
         """
         connection = Connection(self.token)
 
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.set_url(self.production, self.BRANDINGS_URL)
         connection.add_params(params, json_format=True)
 
@@ -252,7 +260,7 @@ class SignaturitClient:
         """
         connection = Connection(self.token)
 
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.set_url(self.production, self.BRANDINGS_ID_URL % branding_id)
         connection.add_params(params)
 
@@ -277,10 +285,10 @@ class SignaturitClient:
         url = self.EMAILS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -294,10 +302,10 @@ class SignaturitClient:
         url = self.EMAILS_COUNT_URL + "?"
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -318,11 +326,13 @@ class SignaturitClient:
     def download_email_audit_trail(self, email_id, certificate_id):
         connection = Connection(self.token)
 
-        connection.set_url(self.production, self.EMAILS_AUDIT_TRAIL % (email_id, certificate_id))
+        connection.set_url(
+            self.production, self.EMAILS_AUDIT_TRAIL % (email_id, certificate_id)
+        )
 
         response, headers = connection.file_request()
 
-        if headers['content-type'] == 'application/json':
+        if headers["content-type"] == "application/json":
             return response
 
         return response
@@ -352,20 +362,20 @@ class SignaturitClient:
 
         documents = {}
 
-        parser.fill_array(documents, files, 'files')
+        parser.fill_array(documents, files, "files")
 
         recipients = recipients if isinstance(recipients, list) else [recipients]
 
         index = 0
         for recipient in recipients:
-            parser.fill_array(parameters, recipient, 'recipients[%i]' % index)
+            parser.fill_array(parameters, recipient, "recipients[%i]" % index)
 
             index += 1
 
-        parser.fill_array(parameters, params, '')
+        parser.fill_array(parameters, params, "")
 
-        parameters['subject'] = subject
-        parameters['body'] = body
+        parameters["subject"] = subject
+        parameters["body"] = body
 
         connection = Connection(self.token)
         connection.set_url(self.production, self.EMAILS_URL)
@@ -381,10 +391,10 @@ class SignaturitClient:
         url = self.SMS_COUNT_URL + "?"
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -399,10 +409,10 @@ class SignaturitClient:
         url = self.SMS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in conditions.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -422,11 +432,13 @@ class SignaturitClient:
     def download_SMS_audit_trail(self, sms_id, certificate_id):
         connection = Connection(self.token)
 
-        connection.set_url(self.production, self.SMS_AUDIT_TRAIL % (sms_id, certificate_id))
+        connection.set_url(
+            self.production, self.SMS_AUDIT_TRAIL % (sms_id, certificate_id)
+        )
 
         response, headers = connection.file_request()
 
-        if headers['content-type'] == 'application/json':
+        if headers["content-type"] == "application/json":
             return response
 
         return response
@@ -454,19 +466,19 @@ class SignaturitClient:
 
         documents = {}
 
-        parser.fill_array(documents, files, 'files')
+        parser.fill_array(documents, files, "files")
 
         recipients = recipients if isinstance(recipients, list) else [recipients]
 
         index = 0
         for recipient in recipients:
-            parser.fill_array(parameters, recipient, 'recipients[%i]' % index)
+            parser.fill_array(parameters, recipient, "recipients[%i]" % index)
 
             index += 1
 
-        parser.fill_array(parameters, params, '')
+        parser.fill_array(parameters, params, "")
 
-        parameters['body'] = body
+        parameters["body"] = body
 
         connection = Connection(self.token)
         connection.set_url(self.production, self.SMS_URL)
@@ -514,10 +526,7 @@ class SignaturitClient:
         :param email: Email to add to your team
         :param role: Can be admin or member
         """
-        parameters = {
-            'email': email,
-            'role': role
-        }
+        parameters = {"email": email, "role": role}
 
         connection = Connection(self.token)
         connection.set_url(self.production, self.TEAM_USERS_URL)
@@ -531,9 +540,7 @@ class SignaturitClient:
         :param user_id: Id of user
         :param role: Can be admin or member
         """
-        parameters = {
-            'role': role
-        }
+        parameters = {"role": role}
 
         url = self.TEAM_USERS_ID_URL % user_id
 
@@ -596,9 +603,7 @@ class SignaturitClient:
         Create group
         :param name: Group name
         """
-        parameters = {
-            'name': name
-        }
+        parameters = {"name": name}
 
         url = self.TEAM_GROUPS_URL
 
@@ -614,15 +619,13 @@ class SignaturitClient:
         :param group_id: Id of group
         :param name: Group name
         """
-        parameters = {
-            'name': name
-        }
+        parameters = {"name": name}
 
         url = self.TEAM_GROUPS_ID_URL % group_id
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.add_params(parameters)
 
         return connection.patch_request()
@@ -699,10 +702,10 @@ class SignaturitClient:
         url = self.SUBSCRIPTIONS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in params.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -713,13 +716,13 @@ class SignaturitClient:
         """
         Count all subscriptions
         """
-        url = self.SUBSCRIPTIONS_COUNT_URL + '?'
+        url = self.SUBSCRIPTIONS_COUNT_URL + "?"
 
         for key, value in params.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -743,16 +746,13 @@ class SignaturitClient:
         :param events: Events to subscribe
         :param url: Url to send events
         """
-        params = {
-            'url': url,
-            'events': events
-        }
+        params = {"url": url, "events": events}
 
         url = self.SUBSCRIPTIONS_URL
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.add_params(params, json_format=True)
 
         return connection.post_request()
@@ -767,16 +767,16 @@ class SignaturitClient:
         params = {}
 
         if url is not None:
-            params['url'] = url
+            params["url"] = url
 
         if events is not None:
-            params['events'] = events
+            params["events"] = events
 
         url = self.SUBSCRIPTIONS_ID_URL % subscription_id
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.add_params(params)
 
         return connection.patch_request()
@@ -799,10 +799,10 @@ class SignaturitClient:
         url = self.CONTACTS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in params.items():
-            if key is 'ids':
+            if key is "ids":
                 value = ",".join(value)
 
-            url += '&%s=%s' % (key, value)
+            url += "&%s=%s" % (key, value)
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
@@ -826,13 +826,13 @@ class SignaturitClient:
         :param email: user email
         :param name: user name
         """
-        params = {'email': email, 'name': name}
+        params = {"email": email, "name": name}
 
         url = self.CONTACTS_URL
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.add_params(params, json_format=True)
 
         return connection.post_request()
@@ -847,16 +847,16 @@ class SignaturitClient:
         params = {}
 
         if email is not None:
-            params['email'] = email
+            params["email"] = email
 
         if name is not None:
-            params['name'] = name
+            params["name"] = name
 
         url = self.CONTACTS_ID_URL % contact_id
 
         connection = Connection(self.token)
         connection.set_url(self.production, url)
-        connection.add_header('Content-Type', 'application/json')
+        connection.add_header("Content-Type", "application/json")
         connection.add_params(params)
 
         return connection.patch_request()

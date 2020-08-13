@@ -768,7 +768,7 @@ class SignaturitClient:
         url = self.SUBSCRIPTIONS_URL + "?limit=%s&offset=%s" % (limit, offset)
 
         for key, value in params.items():
-            if key is "ids":
+            if key == "ids":
                 value = ",".join(value)
 
             url += "&%s=%s" % (key, value)

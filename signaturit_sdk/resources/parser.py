@@ -22,7 +22,7 @@ class Parser:
             elif isinstance(value, list):
                 self.fill_array(form_array, value, parent_key)
             else:
-                if parent is "files":
+                if parent == "files":
                     value = open(value, "rb")
 
                 form_array[parent_key] = value
